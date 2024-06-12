@@ -1,0 +1,130 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_TRAINS 100
+#define MAX_BOOKINGS 100
+#define MAX_NAME_LEN 100
+
+typedef struct {
+    int train_id;
+    char destination[MAX_NAME_LEN];
+    int available_seats;
+} Train;
+
+typedef struct {
+    int booking_id;
+    int train_id;
+    char passenger_name[MAX_NAME_LEN];
+} Booking;
+
+Train trains[MAX_TRAINS];
+Booking bookings[MAX_BOOKINGS];
+int train_count = 0;
+int booking_count = 0;
+
+void add_train() {
+    if (train_count >= MAX_TRAINS) {
+        printf("Cannot add more trains.\n");
+        return;
+    }
+    Train t;
+    t.train_id = train_count + 1;
+    printf("Enter destination: ");
+    scanf("%s", t.destination);
+    printf("Enter number of available seats: ");
+    scanf("%d", &t.available_seats);
+    trains[train_count++] = t;
+    printf("Train added successfully with ID %d.\n", t.train_id);
+}
+
+void book_ticket() {
+    if (booking_count >= MAX_BOOKINGS) {
+        printf("Cannot make more bookings.\n");
+        return;
+    }
+    int train_id;
+    char passenger_name[MAX_NAME_LEN];
+
+    printf("Enter train ID to book: ");
+    scanf("%d", &train_id);
+
+    if (train_id < 1 || train_id > train_count) {
+        printf("Invalid train ID.\n");
+        return;
+    }
+
+    if (trains[train_id - 1].available_seats <= 0) {
+        printf("No available seats on this train.\n");
+        return;
+    }
+
+    printf("Enter passenger name: ");
+    scanf("%s", passenger_name);
+
+    Booking b;
+    b.booking_id = booking_count + 1;
+    b.train_id = train_id;
+    strcpy(b.passenger_name, passenger_name);
+    bookings[booking_count++] = b;
+
+    trains[train_id - 1].available_seats--;
+
+    printf("Ticket booked successfully with Booking ID %d.\n", b.booking_id);
+}
+
+void display_trains() {
+    printf("Available Trains:\n");
+    for (int i = 0; i < train_count; i++) {
+        printf("Train ID: %d, Destination: %s, Available Seats: %d\n", 
+               trains[i].train_id, trains[i].destination, trains[i].available_seats);
+    }
+}
+
+void display_bookings() {
+    printf("Bookings:\n");
+    for (int i = 0; i < booking_count; i++) {
+        printf("Booking ID: %d, Train ID: %d, Passenger Name: %s\n", 
+               bookings[i].booking_id, bookings[i].train_id, bookings[i].passenger_name);
+    }
+}
+
+void show_menu() {
+    printf("Train Ticket Booking System\n");
+    printf("1. Add Train\n");
+    printf("2. Book Ticket\n");
+    printf("3. Display Trains\n");
+    printf("4. Display Bookings\n");
+    printf("5. Exit\n");
+    printf("Enter your choice: ");
+}
+
+int main() {
+    int choice;
+
+    while (1) {
+        show_menu();
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                add_train();
+                break;
+            case 2:
+                book_ticket();
+                break;
+            case 3:
+                display_trains();
+                break;
+            case 4:
+                display_bookings();
+                break;
+            case 5:
+                exit(0);
+            default:
+                printf("Invalid choice. Please try again.\n");
+        }
+    }
+
+    return 0;
+}
